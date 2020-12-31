@@ -1,58 +1,129 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+    <div class="hello">
+        <button id="btn1" class="btn btn-primary" @click="cut()" style="margin-bottom:20px;">切换场景1</button>
+        <button id="btn2" class="btn btn-warning" style="margin-bottom:20px;">切换场景2</button>
+
+        <div id="container"></div>
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+    import * as THREE from "three"
+
+    var camera;
+    var renderer;
+    var scene;
+    export default {
+        name: 'HelloWorld',
+        data() {
+            return {
+                bigImg: require("./360.jpg"),//全景图图片路径
+            }
+        },
+        mounted() {
+            // 调用全景图函数
+            this.$nextTick(() => {
+                this.init();
+                this.animate();
+            })
+        },
+        methods: {
+            cut() {
+                // 调用全景图函数
+                this.$nextTick(() => {
+                    this.init();
+                    this.animate();
+                })
+            },
+            // 全景图配置函数---------------
+            init() {
+                var container = document.getElementById('container');
+                // 创建渲染器
+                renderer = new THREE.WebGLRenderer();
+                renderer.setPixelRatio(window.devicePixelRatio);
+                // 设置画布的宽高
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                // 判断容器中子元素的长度
+                let childs = container.childNodes;
+                if (container.childNodes.length > 0) {
+                    container.removeChild(childs[0]);
+                    container.appendChild(renderer.domElement);
+                } else {
+                    container.appendChild(renderer.domElement);
+                }
+                //   container.appendChild(renderer.domElement);
+                // 创建场景
+                scene = new THREE.Scene();
+                // 创建相机
+                camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+                camera.position.set(0, 0, 0);
+                var material = new THREE.MeshBasicMaterial();//材质
+                var texture = new THREE.TextureLoader().load(this.bigImg);
+                material.map = texture;
+                var skyBox = new THREE.Mesh(
+                    new THREE.SphereBufferGeometry(100, 100, 100),
+                    material
+                );
+                skyBox.geometry.scale(1, 1, -1);
+                scene.add(skyBox);
+                window.addEventListener('resize', this.onWindowResize, false);
+                var bMouseDown = false;
+                var x = -1;
+                var y = -1;
+                // 添加鼠标事件
+                container.onmousedown = function (event) {
+                    event.preventDefault();//取消默认事件
+                    x = event.clientX;
+                    y = event.clientY;
+                    bMouseDown = true;
+                }
+                container.onmouseup = function (event) {
+                    event.preventDefault();
+                    bMouseDown = false;
+                }
+                container.onmousemove = function (event) {
+                    event.preventDefault();
+                    if (bMouseDown) {
+                        skyBox.rotation.y += -0.005 * (event.clientX - x);
+                        skyBox.rotation.x += -0.005 * (event.clientY - y);
+                        if (skyBox.rotation.x > Math.PI / 2) {
+                            skyBox.rotation.x = Math.PI / 2
+                        }
+                        if (skyBox.rotation.x < -Math.PI / 2) {
+                            skyBox.rotation.x = -Math.PI / 2
+                        }
+                        x = event.clientX;
+                        y = event.clientY;
+                    }
+                }
+                container.onmousewheel = function (event) {
+                    event.preventDefault();
+                    if (event.wheelDelta != 0) {
+                        camera.fov += event.wheelDelta > 0 ? 1 : -1;
+                        if (camera.fov > 150) {
+                            camera.fov = 150;
+                        } else if (camera.fov < 30) {
+                            camera.fov = 30;
+                        }
+                        camera.updateProjectionMatrix();
+                    }
+                }
+            },
+            onWindowResize() {
+                // 窗口缩放的时候,保证场景也跟着一起缩放
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            },
+            animate() {
+                requestAnimationFrame(this.animate); // 循环渲染
+                //执行渲染动作
+                renderer.render(scene, camera);// 渲染场景
+            }
+        },
+    }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>

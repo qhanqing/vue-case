@@ -22,3 +22,8 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### 应用步骤
+npm install three -S    //安装three
+npm install three-orbitcontrols  //安装自由视图检查
+
