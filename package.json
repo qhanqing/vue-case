@@ -1,5 +1,5 @@
 {
-  "name": "3dtest",
+  "name": "vue-case",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,11 +9,14 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "element-ui": "^2.15.1",
+    "less-loader": "^5.0.0",
     "stats-js": "^1.0.1",
     "three": "^0.124.0",
     "three-obj-mtl-loader": "^1.0.3",
     "three-orbitcontrols": "^2.110.3",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -22,7 +25,10 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "sass": "^1.32.12",
+    "sass-loader": "^10.1.1",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.0.0"
   },
   "eslintConfig": {
     "root": true,

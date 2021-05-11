@@ -48,7 +48,7 @@
                 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
                 console.log(6)
                 var materials = []
-                var urls = [require("../assets/all/right.jpg"), require("../assets/all/left.jpg"), require("../assets/all/top.jpg"), require("../assets/all/bottom.jpg"), require("../assets/all/front.jpg"), require("../assets/all/back.jpg")]
+                var urls = [require("./all/right.jpg"), require("./all/left.jpg"), require("./all/top.jpg"), require("./all/bottom.jpg"), require("./all/front.jpg"), require("./all/back.jpg")]
                 console.log(7)
                 // 循环创建立方体六个面的材质
                 for (var i = 0; i < urls.length; i++) {
