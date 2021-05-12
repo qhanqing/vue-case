@@ -28,7 +28,18 @@ export const constantRoutes = [
             },
         ]
     },
-
+    {
+        path: '/滚动公告',
+        name: '滚动公告',
+        component: main,
+        children: [
+            {
+                path: '/横向公告',
+                name: '横向公告',
+                component: (resolve) => require(['@/views/滚动公告/横向公告/index'], resolve),
+            },
+        ]
+    },
 
 ]
 
